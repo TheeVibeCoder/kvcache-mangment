@@ -60,6 +60,20 @@ python verify_kv_reuse.py
 
 ---
 
+## 💡 Architecture & Inspiration: Cloud-to-Edge KV Cache Offloading
+
+In enterprise cloud infrastructure, keeping long-context KV caches in high-cost GPU VRAM (like H100/A100 clusters) is economically and computationally unsustainable. As highlighted in Microsoft & NVIDIA's research:
+
+> 🔗 **Reference:** [Accelerating Inference on AKS with Azure Blob Storage and NVIDIA Dynamo (Microsoft Tech Community)](https://techcommunity.microsoft.com/blog/azurestorageblog/accelerate-inference-on-aks-with-azure-blob-storage-and-nvidia-dynamo/4543408)
+
+In the cloud, frameworks like **NVIDIA Dynamo (NIXL)** and **LMCache** offload KV caches to tiered storage (Azure Blob Storage / NVMe) to achieve up to **2.8× lower Time-to-First-Token (TTFT)** latency by avoiding recomputation.
+
+**This project adapts that exact disaggregated tiered memory principle for local Edge AI:**
+1. **Volatile Unified Memory -> Persistent NVMe Tier:** Instead of locking Mac RAM during idle times, active KV caches are serialized into zero-copy `.safetensors` files on the local NVMe drive.
+2. **Sub-10ms Restoration:** Reopening a session onloads the precomputed attention state in **~8 ms**, bypassing the costly $O(N)$ transformer prefill phase on local Apple Silicon.
+
+---
+
 ## 🛡️ License
 
 MIT License. Designed for Apple Silicon unified memory architecture.
