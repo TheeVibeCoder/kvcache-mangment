@@ -71,9 +71,3 @@ In the cloud, frameworks like **NVIDIA Dynamo (NIXL)** and **LMCache** offload K
 **This project adapts that exact disaggregated tiered memory principle for local Edge AI:**
 1. **Volatile Unified Memory -> Persistent NVMe Tier:** Instead of locking Mac RAM during idle times, active KV caches are serialized into zero-copy `.safetensors` files on the local NVMe drive.
 2. **Sub-10ms Restoration:** Reopening a session onloads the precomputed attention state in **~8 ms**, bypassing the costly $O(N)$ transformer prefill phase on local Apple Silicon.
-
----
-
-## 🛡️ License
-
-MIT License. Designed for Apple Silicon unified memory architecture.
