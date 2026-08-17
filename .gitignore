@@ -1,0 +1,31 @@
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Large Model Weights (DO NOT COMMIT)
+models/
+*.bin
+*.pt
+
+# Local KV Cache & Safetensors stores (Session data)
+kv_cache_store/
+kv_cache_bench_store/
+kv_cache_endurance_store/
+kv_cache_comparison/
+evaluation_output/
+*.safetensors
+*.log
+
+# OS & IDE
+.DS_Store
+.vscode/
+.idea/
