@@ -1,5 +1,7 @@
 """
-Inspection tool for viewing internal structure & tensor values of .safetensors files.
+====================================================================================================
+VERSION 1: Inspection tool for viewing internal structure & tensor values of .safetensors files.
+====================================================================================================
 """
 
 import sys
@@ -46,35 +48,30 @@ def inspect_safetensors(filepath: str):
     print("🔍 3. DEEP DIVE: ACTUAL TENSOR VALUES INSIDE LAYER 0")
     print("=" * 80)
 
-    print("\n   [A] Keys Quantized Array (layer_0_k_arr) - Raw Packed Uint32 bits:")
-    k_arr = np.array(tensors["layer_0_k_arr"])
-    print(f"       Shape: {k_arr.shape}")
-    print("       First 4 packed integers (hex format showing packed 8-bit weights):")
-    first_vals = k_arr[0, 0, 0, :4]
-    for i, val in enumerate(first_vals):
-        print(f"         - Element [{i}]: {val} (Hex: 0x{val:08X})")
+    if "layer_0_k_arr" in tensors:
+        print("\n   [A] Keys Quantized Array (layer_0_k_arr) - Raw Packed Uint32 bits:")
+        k_arr = np.array(tensors["layer_0_k_arr"])
+        print(f"       Shape: {k_arr.shape}")
+        print("       First 4 packed integers (hex format showing packed 8-bit weights):")
+        first_vals = k_arr[0, 0, 0, :4]
+        for i, val in enumerate(first_vals):
+            print(f"         - Element [{i}]: {val} (Hex: 0x{val:08X})")
 
-    print("\n   [B] Keys Scale Multiplier (layer_0_k_sc) - Float16 FP values:")
-    k_sc = np.array(tensors["layer_0_k_sc"])
-    print(f"       Shape: {k_sc.shape}")
-    print(f"       Values: {k_sc[0, 0, 0, :]}")
+        print("\n   [B] Keys Scale Multiplier (layer_0_k_sc) - Float16 FP values:")
+        k_sc = np.array(tensors["layer_0_k_sc"])
+        print(f"       Shape: {k_sc.shape}")
+        print(f"       Values: {k_sc[0, 0, 0, :]}")
 
-    print("\n   [C] Keys Bias Offset (layer_0_k_bi) - Float16 FP values:")
-    k_bi = np.array(tensors["layer_0_k_bi"])
-    print(f"       Shape: {k_bi.shape}")
-    print(f"       Values: {k_bi[0, 0, 0, :]}")
+        print("\n   [C] Keys Bias Offset (layer_0_k_bi) - Float16 FP values:")
+        k_bi = np.array(tensors["layer_0_k_bi"])
+        print(f"       Shape: {k_bi.shape}")
+        print(f"       Values: {k_bi[0, 0, 0, :]}")
 
-    print("\n   [D] Layer Offset (Number of Tokens Cached):")
-    offset = tensors["layer_0_offset"].item()
-    print(f"       Offset: {offset} tokens")
+    if "layer_0_offset" in tensors:
+        offset = tensors["layer_0_offset"].item()
+        print(f"\n   [D] Layer Offset (Number of Tokens Cached): {offset} tokens")
 
     print("\n" + "=" * 80)
-    print("📊 4. ALL TENSORS SUMMARY TABLE")
-    print("=" * 80)
-    total_elements = sum(t.size for t in tensors.values())
-    print(f"Total layers stored   : {len([k for k in tensors.keys() if '_k_arr' in k])} layers")
-    print(f"Total tensor elements : {total_elements:,}")
-    print("=" * 80)
 
 if __name__ == "__main__":
     target = sys.argv[1] if len(sys.argv) > 1 else "kv_cache_store/demo_code_session.safetensors"

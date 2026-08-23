@@ -24,6 +24,11 @@ kv_cache_comparison/
 evaluation_output/
 *.safetensors
 *.log
+*.jsonl
+
+# Environment & Secrets
+.env
+.env.*
 
 # OS & IDE
 .DS_Store

@@ -1,23 +1,32 @@
 """
-Verification script to prove 100% KV Cache reuse (Zero-Prefill Recomputation).
+====================================================================================================
+VERSION 1: Verification script for KV Cache reuse (Zero-Prefill Recomputation).
+====================================================================================================
 """
 
 import time
 import os
+import sys
+
+# Ensure local v1 imports resolve
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from mlx_lm import load, generate
 from kv_cache_manager import LocalKVCacheStore
 
 def verify_reuse():
     model_path = "models/qwen2.5-coder-3b-mlx-4bit"
+    if not os.path.exists(model_path):
+        model_path = "../models/qwen2.5-coder-3b-mlx-4bit"
+
     print("=" * 70)
-    print("🧪 KV CACHE REUSE VERIFICATION TEST")
+    print("🧪 V1 KV CACHE REUSE VERIFICATION TEST")
     print("=" * 70)
 
     model, tokenizer = load(model_path)
     store = LocalKVCacheStore(storage_dir="kv_cache_store")
     cache_id = "reuse_verification_test"
 
-    # 1. Prepare a long codebase prompt (Simulated 500+ token context)
     codebase_context = """
 class AuthenticationManager:
     def __init__(self, secret_key: str = "super_secret_jwt_token_key_12345"):
@@ -107,7 +116,7 @@ class AuthenticationManager:
 
     # Summary
     print("\n" + "=" * 70)
-    print("📊 VERIFICATION RESULTS:")
+    print("📊 V1 VERIFICATION RESULTS:")
     print("=" * 70)
     print(f"1. Memory Restored        : {tokens_cached} tokens loaded in {(t_load_1 - t_load_0)*1000:.2f} ms")
     print(f"2. Speed with Cache       : {time_with_cache:.3f}s")

@@ -1,11 +1,13 @@
 """
-Local Disk-Backed KV Cache Manager with 4-bit, 8-bit, and FP16 Quantization Support.
-
-Allows:
-1. Creating 4-bit or 8-bit Quantized KV Caches (saves up to ~75% RAM and SSD space).
-2. Offloading pre-computed KV Caches to local SSD storage (.safetensors).
-3. Freeing GPU/Unified Memory entirely between agent operations.
-4. Onloading cached KV states on-demand in milliseconds (Zero-Prefill Recomputation).
+====================================================================================================
+VERSION 1: Local Disk-Backed KV Cache Manager (Session-Level Persistence)
+====================================================================================================
+• Architecture:
+  - Creates 4-bit, 8-bit, or FP16 Quantized KV Caches.
+  - Offloads pre-computed KV Caches to local SSD storage (.safetensors) upon session close or /exit.
+  - Frees Unified Memory between agent operations.
+  - Onloads cached KV states on-demand in milliseconds (Zero-Prefill Recomputation).
+====================================================================================================
 """
 
 import os
@@ -72,7 +74,6 @@ class LocalKVCacheStore:
 
         for i, layer_cache in enumerate(cache):
             if is_quantized:
-                # Quantized format: keys/values are tuples of (array, scales, biases)
                 tensor_dict[f"layer_{i}_k_arr"] = layer_cache.keys[0]
                 tensor_dict[f"layer_{i}_k_sc"] = layer_cache.keys[1]
                 tensor_dict[f"layer_{i}_k_bi"] = layer_cache.keys[2]
@@ -159,4 +160,3 @@ class LocalKVCacheStore:
         if not os.path.exists(self.storage_dir):
             return []
         return [f.replace(".safetensors", "") for f in os.listdir(self.storage_dir) if f.endswith(".safetensors")]
-

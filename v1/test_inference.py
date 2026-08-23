@@ -1,15 +1,24 @@
 """
-Inference test script demonstrating 8-bit KV Cache offload & onload with LocalKVCacheStore.
+====================================================================================================
+VERSION 1: Inference test script demonstrating 8-bit KV Cache offload & onload.
+====================================================================================================
 """
 
 import sys
 import os
 import time
+
+# Ensure local v1 imports resolve
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from mlx_lm import load, generate
 from kv_cache_manager import LocalKVCacheStore
 
 def run_kv_inference_demo():
     model_path = "models/qwen2.5-coder-3b-mlx-4bit"
+    if not os.path.exists(model_path):
+        model_path = "../models/qwen2.5-coder-3b-mlx-4bit"
+
     if not os.path.exists(model_path):
         print(f"[!] Error: Model path '{model_path}' does not exist.")
         return
@@ -19,7 +28,6 @@ def run_kv_inference_demo():
     print("=" * 70)
     model, tokenizer = load(model_path)
 
-    # Initialize KV Cache Store (uses bits=8 by default)
     store = LocalKVCacheStore(storage_dir="kv_cache_store")
     cache_id = "demo_code_session"
 
@@ -29,7 +37,6 @@ def run_kv_inference_demo():
     kv_cache = store.create_cache(model, bits=8)
     print(f"[✓] Created 8-bit KV Cache across {len(kv_cache)} model layers.")
 
-    # Context Prompt to ingest into KV cache
     repo_context = """
 # System Context: Codebase Architecture
 class DatabaseConnection:
@@ -143,4 +150,3 @@ class DatabaseConnection:
 
 if __name__ == "__main__":
     run_kv_inference_demo()
-
